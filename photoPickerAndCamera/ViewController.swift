@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 class ViewController: UIViewController {
     
@@ -52,6 +53,23 @@ class ViewController: UIViewController {
         photosButtonTapped()
     }
     
+    func checkPermission() {
+        let photoAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
+        switch photoAuthorizationStatus {
+        case .authorized:
+            print("Access is granted by user")
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({ (newStatus) in print("status is \(newStatus)")
+                if newStatus == PHAuthorizationStatus.authorized {
+                    print("success") }
+            })
+        case .restricted:
+            print("User do not have access to photo album.")
+        case .denied:
+            print("User has denied the permission.")
+        }
+    }
+    
     
     func photosButtonTapped() {
         let imagePicker = UIImagePickerController()
@@ -73,6 +91,7 @@ class ViewController: UIViewController {
         }
         
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            checkPermission()
             let photoLibraryAction = UIAlertAction(title: "photo library", style: .default, handler: {
                 action in
                 imagePicker.sourceType = .photoLibrary
